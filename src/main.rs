@@ -5,6 +5,7 @@ pub mod material;
 pub mod vec3;
 pub mod sphere;
 pub mod camera;
+pub mod plane_surf;
 
 use camera::Camera;
 use color::Color;
@@ -12,6 +13,7 @@ use rand::prelude::*;
 use ray::Ray;
 use vec3::Vec3;
 use sphere::Sphere;
+use plane_surf::Plane;
 use hit::{Hittable, HittableList};
 use material::{scatter, Material};
 
@@ -38,27 +40,32 @@ fn main() {
     let height = 180;   //Picture height
     let samples = 100;  //Nr of samples - higher nr will give better picture quality
     let max_val = 255;  //Max value in RGB colours (0...255)
-    // let light = 100;    //Light level in the world (0...100)
+    let light = 100;    //Light level in the world (0...100)
 
     /* Camera setup */
     let look_from = Vec3::new(1.0, 2.0, 2.0);  	    //Where is camera looking from
     let look_at = Vec3::new(0.0, 0.0, -1.0);        //Where camera is pointing to
     let vup = Vec3::new(0.0, 1.0, 0.0);             //Camera angle (better to leave as is)
-    let vfov = 90.0;                                //View angle - can be used for zoom (smaller angle = zoomed in)
+    let vfov = 45.0;                                //View angle - can be used for zoom (smaller angle = zoomed in)
     let aspect = width as f64 / height as f64;      //Ratio of camera picture
     let aperture = 0.1;                             //Focus depth
     let camera = Camera::new(look_from, look_at, vup, vfov, aspect, aperture);
 
     /* Objects setup */
     let mut list: Vec<Box<dyn Hittable>> = Vec::new();
-    list.push(Box::new(Sphere::new(Vec3(0.0, 0.0, -1.0), 0.5, Material::Lambertian { albedo: Color::new(0.4, 0.4, 1.0) })));
-    list.push(Box::new(Sphere::new(Vec3(1.0, 0.0, -1.0), 0.5, Material::Metal { albedo: Color::new(1.0, 1.0, 1.0), fuzz: 0.0 })));
+    list.push(Box::new(Sphere::new(Vec3(1.0, 0.0, -1.0), 0.5, Material::Lambertian { albedo: Color::new(0.4, 0.4, 1.0) })));
+    list.push(Box::new(Sphere::new(Vec3(0.0, 0.0, -1.0), 0.5, Material::Metal { albedo: Color::new(1.0, 1.0, 1.0), fuzz: 0.0 })));
     list.push(Box::new(Sphere::new(Vec3(-1.0, 0.0, -1.0), 0.5, Material::Dielectric { ref_idx: 1.5 } )));
-    list.push(Box::new(Sphere::new(Vec3(0.0, -100.5, -1.0), 100.0, Material::Lambertian { albedo: Color::new(0.2, 0.8, 0.0) }))); //Earth
+    list.push(Box::new(Plane::new(Vec3::new(0.0, 2.0, -1.0), 0.0, 4.0, 5.0, Material::Lambertian { albedo: Color::new(0.9, 0.8, 0.1) })));
+    
     let world = HittableList::new(list);
-
-
     let mut rng = rand::thread_rng();
+    let brightness: f64;
+    if light > 0 && light <= 100 {
+        brightness = light as f64 / 100 as f64;
+    } else {
+        brightness = 1.0;
+    }
 
     println!("P3\n{} {}\n{}", width, height, max_val);
     for j in (0..height).rev() {
@@ -73,7 +80,7 @@ fn main() {
             }
             
             col  = col / samples as f64;
-            col = Color::new(col.r(), col.g(), col.b());
+            col = brightness * Color::new(col.r(), col.g(), col.b());
             let ir = (255.99 * col.r()) as i32;
             let ig = (255.99 * col.g()) as i32;
             let ib = (255.99 * col.b()) as i32;
