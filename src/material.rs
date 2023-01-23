@@ -8,7 +8,7 @@ use rand::prelude::*;
 #[derive(Copy, Clone, Debug)]
 pub enum Material {
     Lambertian { albedo: Color },
-    Metal { albedo: Color, fuzz: f64 },
+    Metal { albedo: Color },
     Dielectric { ref_idx: f64 },
 }
 
@@ -26,13 +26,9 @@ pub fn scatter(material: &Material, ray_in: &Ray, rec: &HitRecord, attentuation:
             *attentuation = albedo;
             return true;
         }
-        &Material::Metal { albedo, fuzz } => {
-            let mut f = 1.0;
-            if fuzz < 1.0 {
-                f = fuzz;
-            }
+        &Material::Metal { albedo} => {
             let reflected = reflect(&Vec3::unit_vector(&ray_in.direction), &rec.normal);
-            *scattered = Ray::new(rec.point, reflected + f * random_in_unit_sphere());
+            *scattered = Ray::new(rec.point, reflected);
             *attentuation = albedo;
             return Vec3::dot(&scattered.direction, &rec.normal) > 0.0;
         }

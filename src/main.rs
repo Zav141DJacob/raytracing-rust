@@ -54,7 +54,7 @@ fn main() {
     /* Objects setup */
     let mut list: Vec<Box<dyn Hittable>> = Vec::new();
     list.push(Box::new(Sphere::new(Vec3(1.0, 0.0, -1.0), 0.5, Material::Lambertian { albedo: Color::new(0.4, 0.4, 1.0) })));
-    list.push(Box::new(Sphere::new(Vec3(0.0, 0.0, -1.0), 0.5, Material::Metal { albedo: Color::new(1.0, 1.0, 1.0), fuzz: 0.0 })));
+    list.push(Box::new(Sphere::new(Vec3(0.0, 0.0, -1.0), 0.5, Material::Metal { albedo: Color::new(1.0, 1.0, 1.0) })));
     list.push(Box::new(Sphere::new(Vec3(-1.0, 0.0, -1.0), 0.5, Material::Dielectric { ref_idx: 1.5 } )));
     list.push(Box::new(Plane::new(Vec3::new(0.0, 2.0, -1.0), 0.0, 4.0, 5.0, Material::Lambertian { albedo: Color::new(0.9, 0.8, 0.1) })));
     
