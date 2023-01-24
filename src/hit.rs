@@ -7,12 +7,25 @@ pub struct HitRecord {
     pub t: f64,
     pub point: Vec3,
     pub normal: Vec3,
+    pub u: f64,
+    pub v: f64,
     pub material: Material
 }
 
 pub trait Hittable {
     fn hit(&self, _ray: &Ray, _t_min: f64, _t_max: f64) -> Option<HitRecord> {
         None
+    }
+}
+
+impl HitRecord {
+    pub fn set_face_normal(&mut self, r: &Ray, outward_normal: &Vec3) {
+        let front_face = Vec3::dot(&r.direction, outward_normal) > 0.0;
+        if front_face {
+            self.normal = *outward_normal;
+        } else {
+            self.normal = *outward_normal * -1.0;
+        }
     }
 }
 
@@ -52,6 +65,8 @@ mod tests {
             t: 1.0,
             point: Vec3(1.0, 2.0, 3.0),
             normal: Vec3(0.0, 0.0, 1.0),
+            u: 1.0,
+            v: 1.0,
             material: Material::Lambertian { albedo: Color::default() }
         };
         assert_eq!(hit_record.point, Vec3(1.0, 2.0, 3.0));

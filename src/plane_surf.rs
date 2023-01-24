@@ -30,6 +30,8 @@ impl Hittable for Plane {
                         t,
                         point,
                         normal: self.normal,
+                        u: 0.0,
+                        v: 0.0,
                         material: self.material,
                     });
                 }

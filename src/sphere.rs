@@ -27,18 +27,22 @@ impl Hittable for Sphere {
         if discriminant > 0.0 {
             let mut temp = (-b - discriminant.sqrt()) / a;
             if temp < t_max && temp > t_min {
-                return Some(HitRecord { 
-                    t: temp, 
-                    point: r.at(temp), 
-                    normal: (r.at(temp) - self.center) / self.radius, 
+                return Some(HitRecord {
+                    t: temp,
+                    point: r.at(temp),
+                    normal: (r.at(temp) - self.center) / self.radius,
+                    u: 0.0,
+                    v: 0.0,
                     material: self.material })
             }
             temp = (-b + discriminant.sqrt()) / a;
             if temp < t_max && temp > t_min {
-                return Some(HitRecord { 
-                    t: temp, 
-                    point: r.at(temp), 
-                    normal: (r.at(temp) - self.center) / self.radius, 
+                return Some(HitRecord {
+                    t: temp,
+                    point: r.at(temp),
+                    normal: (r.at(temp) - self.center) / self.radius,
+                    u: 0.0,
+                    v: 0.0,
                     material: self.material })
             }
         }

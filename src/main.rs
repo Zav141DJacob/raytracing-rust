@@ -6,6 +6,8 @@ pub mod vec3;
 pub mod sphere;
 pub mod camera;
 pub mod plane_surf;
+pub mod rect;
+pub mod cube;
 
 use camera::Camera;
 use color::Color;
@@ -14,6 +16,7 @@ use ray::Ray;
 use vec3::Vec3;
 use sphere::Sphere;
 use plane_surf::Plane;
+use cube::Cube;
 use hit::{Hittable, HittableList};
 use material::{scatter, Material};
 
@@ -55,7 +58,8 @@ fn main() {
     let mut list: Vec<Box<dyn Hittable>> = Vec::new();
     list.push(Box::new(Sphere::new(Vec3(1.0, 0.0, -1.0), 0.5, Material::Lambertian { albedo: Color::new(0.4, 0.4, 1.0) })));
     list.push(Box::new(Sphere::new(Vec3(0.0, 0.0, -1.0), 0.5, Material::Metal { albedo: Color::new(1.0, 1.0, 1.0) })));
-    list.push(Box::new(Sphere::new(Vec3(-1.0, 0.0, -1.0), 0.5, Material::Dielectric { ref_idx: 1.5 } )));
+    list.push(Box::new(Cube::cube(Vec3::new(-1.5, 0.0, -1.0), Vec3::new(-0.5, 1.0, 0.0), Material::Lambertian { albedo: Color::new(1.0, 0.1, 0.1) })));
+    //list.push(Box::new(Sphere::new(Vec3(-1.0, 0.0, -1.0), 0.5, Material::Dielectric { ref_idx: 1.5 } )));
     list.push(Box::new(Plane::new(Vec3::new(0.0, 2.0, -1.0), 0.0, 4.0, 5.0, Material::Lambertian { albedo: Color::new(0.9, 0.8, 0.1) })));
     
     let world = HittableList::new(list);
