@@ -3,6 +3,9 @@ use crate::material::Material;
 use crate::ray::Ray;
 use crate::vec3::Vec3;
 
+use serde::{Deserialize, Serialize};
+
+#[derive(Debug, Deserialize, Serialize)]
 pub struct XYRect {
     x0: f64,
     x1: f64,
@@ -12,6 +15,7 @@ pub struct XYRect {
     mat: Material,
 }
 
+#[derive(Debug, Deserialize, Serialize)]
 pub struct XZRect {
     x0: f64,
     x1: f64,
@@ -21,6 +25,7 @@ pub struct XZRect {
     mat: Material,
 }
 
+#[derive(Debug, Deserialize, Serialize)]
 pub struct YZRect {
     y0: f64,
     y1: f64,
@@ -48,6 +53,7 @@ impl YZRect {
     }
 }
 
+#[typetag::serde(name = "XYRect")]
 impl Hittable for XYRect {
     fn hit(&self, r: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {
         let t = (self.k - r.origin.z()) / r.direction.z();
@@ -78,6 +84,7 @@ impl Hittable for XYRect {
     }
 }
 
+#[typetag::serde(name = "XZRect")]
 impl Hittable for XZRect {
     fn hit(&self, r: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {
         let t = (self.k - r.origin.y()) / r.direction.y();
@@ -108,6 +115,7 @@ impl Hittable for XZRect {
     }
 }
 
+#[typetag::serde(name = "YZRect")]
 impl Hittable for YZRect {
     fn hit(&self, r: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {
         let t = (self.k - r.origin.x()) / r.direction.x();

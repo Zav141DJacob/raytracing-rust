@@ -1,5 +1,5 @@
-use crate::vec3::Vec3;
 use crate::ray::Ray;
+use crate::vec3::Vec3;
 use rand::prelude::*;
 
 pub struct Camera {
@@ -13,7 +13,14 @@ pub struct Camera {
 }
 
 impl Camera {
-    pub fn new(look_from: Vec3, look_at: Vec3, vup: Vec3, vfov: f64, aspect:f64, aperture: f64) -> Camera {
+    pub fn new(
+        look_from: Vec3,
+        look_at: Vec3,
+        vup: Vec3,
+        vfov: f64,
+        aspect: f64,
+        aperture: f64,
+    ) -> Camera {
         let lens_radius = aperture / 2.0;
         let focus_dist = (look_from - look_at).length();
         let theta = vfov * std::f64::consts::PI / 180.0;
@@ -25,8 +32,11 @@ impl Camera {
         let u = Vec3::unit_vector(&Vec3::cross(&vup, &w));
         let v = Vec3::cross(&w, &u);
 
-        Camera{
-            lower_left_corner: origin - half_width * focus_dist * u - half_height * focus_dist * v - focus_dist * w,
+        Camera {
+            lower_left_corner: origin
+                - half_width * focus_dist * u
+                - half_height * focus_dist * v
+                - focus_dist * w,
             horizontal: 2.0 * half_width * focus_dist * u,
             vertical: 2.0 * half_height * focus_dist * v,
             origin,
@@ -41,7 +51,9 @@ impl Camera {
         let offset = self.u * rd.x() + self.v * rd.y();
         Ray {
             origin: self.origin + offset,
-            direction: self.lower_left_corner + s * self.horizontal + t * self.vertical - self.origin - offset
+            direction: self.lower_left_corner + s * self.horizontal + t * self.vertical
+                - self.origin
+                - offset,
         }
     }
 }

@@ -1,11 +1,11 @@
+use crate::color::Color;
 use crate::hit::HitRecord;
 use crate::ray::Ray;
 use crate::vec3::Vec3;
-use crate::color::Color;
 use rand::prelude::*;
+use serde::{Deserialize, Serialize};
 
-#[allow(dead_code)]
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, Deserialize, Serialize)]
 pub enum Material {
     Lambertian { albedo: Color },
     Metal { albedo: Color },
@@ -14,49 +14,61 @@ pub enum Material {
 
 impl Default for Material {
     fn default() -> Self {
-        Material::Lambertian { albedo: Color::default() }
+        Material::Lambertian {
+            albedo: Color::default(),
+        }
     }
 }
 
-pub fn scatter(material: &Material, ray_in: &Ray, rec: &HitRecord, attentuation: &mut Color, scattered: &mut Ray) -> bool {
+pub fn scatter(
+    material: &Material,
+    ray_in: &Ray,
+    rec: &HitRecord,
+    attentuation: &mut Color,
+    scattered: &mut Ray,
+) -> bool {
     match material {
-        &Material::Lambertian { albedo } => {
+        Material::Lambertian { albedo } => {
             let target = rec.point + rec.normal + random_in_unit_sphere();
             *scattered = Ray::new(rec.point, target - rec.point);
-            *attentuation = albedo;
-            return true;
+            *attentuation = *albedo;
+            true
         }
-        &Material::Metal { albedo} => {
+        Material::Metal { albedo } => {
             let reflected = reflect(&Vec3::unit_vector(&ray_in.direction), &rec.normal);
             *scattered = Ray::new(rec.point, reflected);
-            *attentuation = albedo;
-            return Vec3::dot(&scattered.direction, &rec.normal) > 0.0;
+            *attentuation = *albedo;
+            Vec3::dot(&scattered.direction, &rec.normal) > 0.0
         }
-        &Material::Dielectric { ref_idx } => {
+        Material::Dielectric { ref_idx } => {
             let outward_normal: Vec3;
             let reflected = reflect(&ray_in.direction, &rec.normal);
-            let ni_over_nt:f64;
+            let ni_over_nt: f64;
             *attentuation = Color::new(1.0, 1.0, 1.0);
             let mut refracted = Vec3::default();
 
-            let reflect_prob: f64;
-            let cosine: f64;
-
-            if Vec3::dot(&ray_in.direction, &rec.normal) > 0.0 {
+            let cosine: f64 = if Vec3::dot(&ray_in.direction, &rec.normal) > 0.0 {
                 outward_normal = -rec.normal;
-                ni_over_nt = ref_idx;
-                cosine = ref_idx * Vec3::dot(&ray_in.direction, &rec.normal) / ray_in.direction.length();
+                ni_over_nt = *ref_idx;
+
+                ref_idx * Vec3::dot(&ray_in.direction, &rec.normal) / ray_in.direction.length()
             } else {
                 outward_normal = rec.normal;
                 ni_over_nt = 1.0 / ref_idx;
-                cosine = - Vec3::dot(&ray_in.direction, &rec.normal) / ray_in.direction.length();
-            }
 
-            if refract(&ray_in.direction, &outward_normal, ni_over_nt, &mut refracted) {
-                reflect_prob = schlick(cosine, ref_idx);
+                -Vec3::dot(&ray_in.direction, &rec.normal) / ray_in.direction.length()
+            };
+
+            let reflect_prob: f64 = if refract(
+                &ray_in.direction,
+                &outward_normal,
+                ni_over_nt,
+                &mut refracted,
+            ) {
+                schlick(cosine, *ref_idx)
             } else {
-                reflect_prob = 1.0;
-            }
+                1.0
+            };
 
             let mut rng = rand::thread_rng();
             if rng.gen::<f64>() < reflect_prob {
@@ -65,13 +77,13 @@ pub fn scatter(material: &Material, ray_in: &Ray, rec: &HitRecord, attentuation:
                 *scattered = Ray::new(rec.point, refracted);
             }
 
-            return true;
+            true
         }
     }
 }
 
 pub fn reflect(v: &Vec3, n: &Vec3) -> Vec3 {
-    return *v - 2.0 * Vec3::dot(v, n) * *n;
+    *v - 2.0 * Vec3::dot(v, n) * *n
 }
 
 pub fn refract(v: &Vec3, n: &Vec3, ni_over_nt: f64, refracted: &mut Vec3) -> bool {
@@ -81,15 +93,17 @@ pub fn refract(v: &Vec3, n: &Vec3, ni_over_nt: f64, refracted: &mut Vec3) -> boo
 
     if discriminant > 0.0 {
         *refracted = ni_over_nt * (uv - *n * dt) - *n * discriminant.sqrt();
-        return true
+        true
+    } else {
+        false
     }
-    return false
 }
 
 fn schlick(cosine: f64, ref_idx: f64) -> f64 {
     let mut r0 = (1.0 - ref_idx) / (1.0 + ref_idx);
     r0 = r0 * r0;
-    return r0 + (1.0 - r0) * (1.0 - cosine).powi(5);
+
+    r0 + (1.0 - r0) * (1.0 - cosine).powi(5)
 }
 
 fn random_in_unit_sphere() -> Vec3 {

@@ -1,80 +1,6 @@
-use std::ops::{Add, Mul, Neg, Sub, Div};
+use crate::vec3::Vec3;
 
-#[derive(Debug, Default, Copy, Clone, PartialEq)]
-pub struct Color(pub f64, pub f64, pub f64);
-
-impl Color {
-    pub fn new(r: f64, g: f64, b: f64) -> Self {
-        Color(r, g, b)
-    }
-
-    pub fn r(self) -> f64 {self.0}
-    pub fn g(self) -> f64 {self.1}
-    pub fn b(self) -> f64 {self.2}
-}
-
-impl Add for Color {
-    type Output = Self;
-
-    fn add(self, other: Self) -> Self {
-        Self(self.0 + other.0, self.1 + other.1, self.2 + other.2)
-    }
-}
-
-impl Sub for Color {
-    type Output = Self;
-
-    fn sub(self, other: Self) -> Self {
-        Self(self.0 - other.0, self.1 - other.1, self.2 - other.2)
-    }
-}
-impl Neg for Color {
-    type Output = Self;
-
-    fn neg(self) -> Self {
-        Self(-self.0, -self.1, -self.2)
-    }
-}
-
-impl Mul for Color {
-    type Output = Self;
-
-    fn mul(self, other: Self) -> Self {
-        Self(self.0 * other.0, self.1 * other.1, self.2 * other.2)
-    }
-}
-
-impl Mul<f64> for Color {
-    type Output = Self;
-
-    fn mul(self, other: f64) -> Self {
-        Self(self.0 * other, self.1 * other, self.2 * other)
-    }
-}
-
-impl Mul<Color> for f64 {
-    type Output = Color;
-
-    fn mul(self, color: Color) -> Color {
-        Color::new(self * color.r(), self * color.g(), self * color.b())
-    }
-}
-
-impl Div<f64> for Color {
-    type Output = Self;
-
-    fn div(self, other: f64) -> Self {
-        Self(self.0 / other, self.1 / other, self.2 / other)
-    }
-}
-
-impl Div<Color> for f64 {
-    type Output = Color;
-
-    fn div(self, color: Color) -> Color {
-        Color::new(self / color.r(), self / color.g(), self / color.b())
-    }
-}
+pub type Color = Vec3;
 
 #[cfg(test)]
 mod tests {
@@ -138,11 +64,10 @@ mod tests {
 
     #[test]
     fn test_div_color() {
-    let color = Color::new(1.0, 0.5, 0.25);
+        let color = Color::new(1.0, 0.5, 0.25);
         let result = color / 2.0;
         assert_eq!(result.r(), 0.5);
         assert_eq!(result.g(), 0.25);
         assert_eq!(result.b(), 0.125);
     }
-
 }
