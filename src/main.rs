@@ -8,13 +8,14 @@ pub mod sphere;
 pub mod vec3;
 
 use camera::Camera;
+use clap::Parser;
 use color::Color;
 use hit::{Hittable, HittableList};
-use material::{scatter, Material};
-use plane_surf::Plane;
+use material::scatter;
 use rand::prelude::*;
 use ray::Ray;
-use sphere::Sphere;
+use serde::{Deserialize, Serialize};
+use std::path::PathBuf;
 use vec3::Vec3;
 
 fn color(r: &Ray, world: &HittableList, depth: i32) -> Color {
@@ -34,7 +35,30 @@ fn color(r: &Ray, world: &HittableList, depth: i32) -> Color {
     }
 }
 
+/// Program that renders 3d objects
+#[derive(Parser, Debug)]
+#[command(author, version, about, long_about = None)]
+struct Args {
+    /// Config file to use
+    #[arg(short, long)]
+    config: PathBuf,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+struct Config {
+    world: HittableList,
+}
+
 fn main() {
+    let args = Args::parse();
+    if !args.config.exists() || !args.config.is_file() {
+        eprintln!("Please choose a valid file");
+        return;
+    }
+
+    let raw_config = std::fs::read_to_string(args.config).expect("Failed to read file");
+    let config: Config = ron::from_str(&raw_config).expect("Invalid config file");
+
     /* Main setup */
     let width = 240; //Picture width
     let height = 180; //Picture height
@@ -51,38 +75,6 @@ fn main() {
     let aperture = 0.1; //Focus depth
     let camera = Camera::new(look_from, look_at, vup, vfov, aspect, aperture);
 
-    let list: Vec<Box<dyn Hittable>> = vec![
-        Box::new(Sphere::new(
-            Vec3(1.0, 0.0, -1.0),
-            0.5,
-            Material::Lambertian {
-                albedo: Color::new(0.4, 0.4, 1.0),
-            },
-        )),
-        Box::new(Sphere::new(
-            Vec3(0.0, 0.0, -1.0),
-            0.5,
-            Material::Metal {
-                albedo: Color::new(1.0, 1.0, 1.0),
-            },
-        )),
-        Box::new(Sphere::new(
-            Vec3(-1.0, 0.0, -1.0),
-            0.5,
-            Material::Dielectric { ref_idx: 1.5 },
-        )),
-        Box::new(Plane::new(
-            Vec3::new(0.0, 2.0, -1.0),
-            0.0,
-            4.0,
-            5.0,
-            Material::Lambertian {
-                albedo: Color::new(0.9, 0.8, 0.1),
-            },
-        )),
-    ];
-
-    let world = HittableList::new(list);
     let mut rng = rand::thread_rng();
     let brightness = if light > 0 && light <= 100 {
         light as f64 / 100.0
@@ -90,8 +82,11 @@ fn main() {
         1.0
     };
 
+    let debug_pad = height.to_string().len();
+
     println!("P3\n{width} {height}\n{max_val}");
     for j in (0..height).rev() {
+        eprint!("\rScanlines remaining: {j: <debug_pad$}");
         for i in 0..width {
             let mut col = Color::default();
 
@@ -99,10 +94,10 @@ fn main() {
                 let u = (i as f64 + rng.gen::<f64>()) / width as f64;
                 let v = (j as f64 + rng.gen::<f64>()) / height as f64;
                 let r = &camera.get_ray(u, v);
-                col = col + color(r, &world, 1);
+                col += color(r, &config.world, 1);
             }
 
-            col = col / samples as f64;
+            col /= samples as f64;
             col = brightness * Color::new(col.r(), col.g(), col.b());
             let ir = (255.99 * col.r()) as i32;
             let ig = (255.99 * col.g()) as i32;
@@ -111,4 +106,6 @@ fn main() {
             println!("{ir} {ig} {ib}");
         }
     }
+
+    eprintln!("\nDone!");
 }

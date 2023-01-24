@@ -3,6 +3,9 @@ use crate::material::Material;
 use crate::ray::Ray;
 use crate::vec3::Vec3;
 
+use serde::{Deserialize, Serialize};
+
+#[derive(Debug, Deserialize, Serialize)]
 pub struct Sphere {
     center: Vec3,
     radius: f64,
@@ -19,6 +22,7 @@ impl Sphere {
     }
 }
 
+#[typetag::serde(name = "Sphere")]
 impl Hittable for Sphere {
     fn hit(&self, r: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {
         let oc = r.origin - self.center;

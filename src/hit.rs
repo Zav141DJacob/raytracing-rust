@@ -2,6 +2,8 @@ use crate::material::Material;
 use crate::ray::Ray;
 use crate::Vec3;
 
+use std::fmt::Debug;
+
 #[derive(Default)]
 pub struct HitRecord {
     pub t: f64,
@@ -10,28 +12,31 @@ pub struct HitRecord {
     pub material: Material,
 }
 
-pub trait Hittable {
+#[typetag::serde]
+pub trait Hittable: Debug {
     fn hit(&self, _ray: &Ray, _t_min: f64, _t_max: f64) -> Option<HitRecord> {
         None
     }
 }
 
-pub struct HittableList {
-    list: Vec<Box<dyn Hittable>>,
-}
+use serde::{Deserialize, Serialize};
+
+#[derive(Debug, Deserialize, Serialize)]
+pub struct HittableList(Vec<Box<dyn Hittable>>);
 
 impl HittableList {
     pub fn new(list: Vec<Box<dyn Hittable>>) -> HittableList {
-        HittableList { list }
+        HittableList(list)
     }
 }
 
+#[typetag::serde(name = "HittableList")]
 impl Hittable for HittableList {
     fn hit(&self, ray: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {
         let mut hit_record = None;
         let mut closest_so_far = t_max;
 
-        for object in &self.list {
+        for object in &self.0 {
             if let Some(rec) = object.hit(ray, t_min, closest_so_far) {
                 closest_so_far = rec.t;
                 hit_record = Some(rec);

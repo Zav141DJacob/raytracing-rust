@@ -3,9 +3,9 @@ use crate::hit::HitRecord;
 use crate::ray::Ray;
 use crate::vec3::Vec3;
 use rand::prelude::*;
+use serde::{Deserialize, Serialize};
 
-#[allow(dead_code)]
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, Deserialize, Serialize)]
 pub enum Material {
     Lambertian { albedo: Color },
     Metal { albedo: Color },
