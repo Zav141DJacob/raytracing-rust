@@ -36,37 +36,57 @@ pub struct YZRect {
 }
 
 impl XYRect {
-    pub fn xy_rect(x0: f64, x1: f64, y0: f64, y1: f64, k: f64, mat: Material) -> XYRect {
-        XYRect { x0, x1, y0, y1, k, mat }
+    pub fn new(x0: f64, x1: f64, y0: f64, y1: f64, k: f64, mat: Material) -> XYRect {
+        XYRect {
+            x0,
+            x1,
+            y0,
+            y1,
+            k,
+            mat,
+        }
     }
 }
 
 impl XZRect {
-    pub fn xz_rect(x0: f64, x1: f64, z0: f64, z1: f64, k: f64, mat: Material) -> XZRect {
-        XZRect { x0, x1, z0, z1, k, mat }
+    pub fn new(x0: f64, x1: f64, z0: f64, z1: f64, k: f64, mat: Material) -> XZRect {
+        XZRect {
+            x0,
+            x1,
+            z0,
+            z1,
+            k,
+            mat,
+        }
     }
 }
 
 impl YZRect {
-    pub fn yz_rect(y0: f64, y1: f64, z0: f64, z1: f64, k: f64, mat: Material) -> YZRect {
-        YZRect { y0, y1, z0, z1, k, mat }
+    pub fn new(y0: f64, y1: f64, z0: f64, z1: f64, k: f64, mat: Material) -> YZRect {
+        YZRect {
+            y0,
+            y1,
+            z0,
+            z1,
+            k,
+            mat,
+        }
     }
 }
 
-#[typetag::serde(name = "XYRect")]
 impl Hittable for XYRect {
     fn hit(&self, r: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {
         let t = (self.k - r.origin.z()) / r.direction.z();
 
         if t < t_min || t > t_max {
-            return None
+            return None;
         }
 
         let x = r.origin.x() + t * r.direction.x();
         let y = r.origin.y() + t * r.direction.y();
 
         if x < self.x0 || x > self.x1 || y < self.y0 || y > self.y1 {
-            return None
+            return None;
         }
 
         let outward_normal = Vec3::new(0.0, 0.0, 1.0);
@@ -84,20 +104,19 @@ impl Hittable for XYRect {
     }
 }
 
-#[typetag::serde(name = "XZRect")]
 impl Hittable for XZRect {
     fn hit(&self, r: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {
         let t = (self.k - r.origin.y()) / r.direction.y();
 
         if t < t_min || t > t_max {
-            return None
+            return None;
         }
 
         let x = r.origin.x() + t * r.direction.x();
         let z = r.origin.z() + t * r.direction.z();
 
         if x < self.x0 || x > self.x1 || z < self.z0 || z > self.z1 {
-            return None
+            return None;
         }
 
         let outward_normal = Vec3::new(0.0, 1.0, 0.0);
@@ -115,20 +134,19 @@ impl Hittable for XZRect {
     }
 }
 
-#[typetag::serde(name = "YZRect")]
 impl Hittable for YZRect {
     fn hit(&self, r: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {
         let t = (self.k - r.origin.x()) / r.direction.x();
 
         if t < t_min || t > t_max {
-            return None
+            return None;
         }
 
         let y = r.origin.y() + t * r.direction.y();
         let z = r.origin.z() + t * r.direction.z();
 
         if y < self.y0 || y > self.y1 || z < self.z0 || z > self.z1 {
-            return None
+            return None;
         }
 
         let outward_normal = Vec3::new(1.0, 0.0, 0.0);

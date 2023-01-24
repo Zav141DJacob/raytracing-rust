@@ -14,7 +14,6 @@ pub struct HitRecord {
     pub material: Material,
 }
 
-#[typetag::serde]
 pub trait Hittable: Debug {
     fn hit(&self, _ray: &Ray, _t_min: f64, _t_max: f64) -> Option<HitRecord> {
         None
@@ -32,10 +31,8 @@ impl HitRecord {
     }
 }
 
-use serde::{Deserialize, Serialize};
-
-#[derive(Debug, Default, Deserialize, Serialize)]
-pub struct HittableList(Vec<Box<dyn Hittable>>);
+#[derive(Debug, Default)]
+pub struct HittableList(pub Vec<Box<dyn Hittable>>);
 
 impl HittableList {
     pub fn new(list: Vec<Box<dyn Hittable>>) -> HittableList {
@@ -43,7 +40,6 @@ impl HittableList {
     }
 }
 
-#[typetag::serde(name = "HittableList")]
 impl Hittable for HittableList {
     fn hit(&self, ray: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {
         let mut hit_record = None;

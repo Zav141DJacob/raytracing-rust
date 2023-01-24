@@ -1,5 +1,5 @@
 Config(
-    world: HittableList([
+    world: [
         {
             "Sphere": (
                 center: Vec3(1.0, 0.0, -1.0),
@@ -36,6 +36,6 @@ Config(
                 ),
             )
         }
-    ]),
+    ],
 )
 

@@ -1,27 +1,26 @@
 pub mod camera;
 pub mod color;
+pub mod config;
+pub mod cube;
+pub mod flags;
 pub mod hit;
 pub mod material;
 pub mod plane_surf;
-pub mod rect;
-pub mod cube;
 pub mod ray;
+pub mod rect;
 pub mod sphere;
 pub mod vec3;
 
 use camera::Camera;
 use clap::Parser;
 use color::Color;
+use hit::{Hittable, HittableList};
+use material::scatter;
 use rand::prelude::*;
 use ray::Ray;
-use serde::{Deserialize, Serialize};
-use std::path::PathBuf;
 use vec3::Vec3;
-use sphere::Sphere;
-use plane_surf::Plane;
-use cube::Cube;
-use hit::{Hittable, HittableList};
-use material::{scatter, Material};
+
+use crate::flags::Flags;
 
 fn color(r: &Ray, world: &HittableList, depth: i32) -> Color {
     if let Some(rec) = world.hit(r, 0.0, std::f64::MAX) {
@@ -40,29 +39,52 @@ fn color(r: &Ray, world: &HittableList, depth: i32) -> Color {
     }
 }
 
-/// Program that renders 3d objects
-#[derive(Parser, Debug)]
-#[command(author, version, about, long_about = None)]
-struct Args {
-    /// Config file to use
-    #[arg(short, long)]
-    config: PathBuf,
-}
-
-#[derive(Debug, Deserialize, Serialize)]
-struct Config {
-    world: HittableList,
-}
-
 fn main() {
-    let args = Args::parse();
-    if !args.config.exists() || !args.config.is_file() {
+    let flags = Flags::parse();
+    if !flags.config.exists() || !flags.config.is_file() {
         eprintln!("Please choose a valid file");
         return;
     }
 
-    let raw_config = std::fs::read_to_string(args.config).expect("Failed to read file");
-    let config: Config = ron::from_str(&raw_config).expect("Invalid config file");
+    let app = flags.get_application().expect("Failed to parse config");
+
+    /* Manually added objects */
+    // app.world.0.push(Box::new(Sphere::new(
+    //     Vec3(1.0, 0.0, -1.0),
+    //     0.5,
+    //     Material::Lambertian {
+    //         albedo: Color::new(0.4, 0.4, 1.0),
+    //     },
+    // )));
+    // app.world.0.push(Box::new(Sphere::new(
+    //     Vec3(0.0, 0.0, -1.0),
+    //     0.5,
+    //     Material::Metal {
+    //         albedo: Color::new(1.0, 1.0, 1.0),
+    //     },
+    // )));
+    // app.world.0.push(Box::new(Cube::new(Vec3::new(-1.5, 0.0, -1.0), Vec3::new(-0.5, 1.0, 0.0), Material::Lambertian { albedo: Color::new(1.0, 0.1, 0.1) })));
+    // app.world.0.push(Box::new(Sphere::new(
+    //     Vec3(-1.0, 0.0, -1.0),
+    //     0.5,
+    //     Material::Dielectric { ref_idx: 1.5 },
+    // )));
+    // app.world.0.push(Box::new(Plane::new(
+    //     Vec3::new(0.0, 2.0, -1.0),
+    //     0.0,
+    //     4.0,
+    //     5.0,
+    //     Material::Lambertian {
+    //         albedo: Color::new(0.9, 0.8, 0.1),
+    //     },
+    // )));
+    // app.world.0.push(Box::new(Cube::new(
+    //     Vec3(-0.5, 0.0, -1.0),
+    //     Vec3(0.5, 1.0, 0.0),
+    //     Material::Lambertian {
+    //         albedo: Vec3(1.0, 0.1, 0.1),
+    //     },
+    // )));
 
     /* Main setup */
     let width = 240; //Picture width
@@ -80,15 +102,6 @@ fn main() {
     let aperture = 0.1; //Focus depth
     let camera = Camera::new(look_from, look_at, vup, vfov, aspect, aperture);
 
-    /* Objects setup */
-    let mut list: Vec<Box<dyn Hittable>> = Vec::new();
-    list.push(Box::new(Sphere::new(Vec3(1.0, 0.0, -1.0), 0.5, Material::Lambertian { albedo: Color::new(0.4, 0.4, 1.0) })));
-    list.push(Box::new(Sphere::new(Vec3(0.0, 0.0, -1.0), 0.5, Material::Metal { albedo: Color::new(1.0, 1.0, 1.0) })));
-    //list.push(Box::new(Cube::new(Vec3::new(-1.5, 0.0, -1.0), Vec3::new(-0.5, 1.0, 0.0), Material::Lambertian { albedo: Color::new(1.0, 0.1, 0.1) })));
-    list.push(Box::new(Sphere::new(Vec3(-1.0, 0.0, -1.0), 0.5, Material::Dielectric { ref_idx: 1.5 } )));
-    list.push(Box::new(Plane::new(Vec3::new(0.0, 2.0, -1.0), 0.0, 4.0, 5.0, Material::Lambertian { albedo: Color::new(0.9, 0.8, 0.1) })));
-    
-    let world = HittableList::new(list);
     let mut rng = rand::thread_rng();
     let brightness = if light > 0 && light <= 100 {
         light as f64 / 100.0
@@ -108,7 +121,7 @@ fn main() {
                 let u = (i as f64 + rng.gen::<f64>()) / width as f64;
                 let v = (j as f64 + rng.gen::<f64>()) / height as f64;
                 let r = &camera.get_ray(u, v);
-                col += color(r, &config.world, 1);
+                col += color(r, &app.world, 1);
             }
 
             col /= samples as f64;

@@ -3,9 +3,7 @@ use crate::material::Material;
 use crate::ray::Ray;
 use crate::vec3::Vec3;
 
-use serde::{Deserialize, Serialize};
-
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug)]
 pub struct Plane {
     normal: Vec3,
     dist: f64,
@@ -26,7 +24,6 @@ impl Plane {
     }
 }
 
-#[typetag::serde(name = "Plane")]
 impl Hittable for Plane {
     fn hit(&self, r: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {
         let denom = Vec3::dot(&self.normal, &r.direction);
