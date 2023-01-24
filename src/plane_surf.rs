@@ -35,6 +35,7 @@ impl Hittable for Plane {
                 }
             }
         }
-        return None
+
+        None
     }
 }

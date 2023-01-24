@@ -6,12 +6,16 @@ use crate::vec3::Vec3;
 pub struct Sphere {
     center: Vec3,
     radius: f64,
-    material: Material
+    material: Material,
 }
 
 impl Sphere {
     pub fn new(center: Vec3, radius: f64, material: Material) -> Sphere {
-        Sphere { center, radius, material }
+        Sphere {
+            center,
+            radius,
+            material,
+        }
     }
 }
 
@@ -27,21 +31,24 @@ impl Hittable for Sphere {
         if discriminant > 0.0 {
             let mut temp = (-b - discriminant.sqrt()) / a;
             if temp < t_max && temp > t_min {
-                return Some(HitRecord { 
-                    t: temp, 
-                    point: r.at(temp), 
-                    normal: (r.at(temp) - self.center) / self.radius, 
-                    material: self.material })
+                return Some(HitRecord {
+                    t: temp,
+                    point: r.at(temp),
+                    normal: (r.at(temp) - self.center) / self.radius,
+                    material: self.material,
+                });
             }
             temp = (-b + discriminant.sqrt()) / a;
             if temp < t_max && temp > t_min {
-                return Some(HitRecord { 
-                    t: temp, 
-                    point: r.at(temp), 
-                    normal: (r.at(temp) - self.center) / self.radius, 
-                    material: self.material })
+                return Some(HitRecord {
+                    t: temp,
+                    point: r.at(temp),
+                    normal: (r.at(temp) - self.center) / self.radius,
+                    material: self.material,
+                });
             }
         }
-        return None;
+
+        None
     }
 }

@@ -1,4 +1,4 @@
-use std::ops::{Add, Mul, Neg, Sub, Div};
+use std::ops::{Add, Div, Mul, Neg, Sub};
 
 #[derive(Debug, Default, Copy, Clone, PartialEq)]
 pub struct Color(pub f64, pub f64, pub f64);
@@ -8,9 +8,15 @@ impl Color {
         Color(r, g, b)
     }
 
-    pub fn r(self) -> f64 {self.0}
-    pub fn g(self) -> f64 {self.1}
-    pub fn b(self) -> f64 {self.2}
+    pub fn r(self) -> f64 {
+        self.0
+    }
+    pub fn g(self) -> f64 {
+        self.1
+    }
+    pub fn b(self) -> f64 {
+        self.2
+    }
 }
 
 impl Add for Color {
@@ -138,11 +144,10 @@ mod tests {
 
     #[test]
     fn test_div_color() {
-    let color = Color::new(1.0, 0.5, 0.25);
+        let color = Color::new(1.0, 0.5, 0.25);
         let result = color / 2.0;
         assert_eq!(result.r(), 0.5);
         assert_eq!(result.g(), 0.25);
         assert_eq!(result.b(), 0.125);
     }
-
 }
