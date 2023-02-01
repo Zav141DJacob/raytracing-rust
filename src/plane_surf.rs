@@ -29,9 +29,11 @@ impl Hittable for Plane {
         let denom = Vec3::dot(&self.normal, &r.direction);
         if denom > 1e-6 {
             let t = (-self.dist - Vec3::dot(&self.normal, &r.origin)) / denom;
+
             if t > t_min && t < t_max {
                 let point = r.at(t);
                 let d = point.x().abs().max(point.y().abs().max(point.z().abs()));
+
                 if d < self.width / 2.0 && d < self.height / 2.0 {
                     return Some(HitRecord {
                         t,

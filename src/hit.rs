@@ -15,15 +15,12 @@ pub struct HitRecord {
 }
 
 pub trait Hittable: Debug {
-    fn hit(&self, _ray: &Ray, _t_min: f64, _t_max: f64) -> Option<HitRecord> {
-        None
-    }
+    fn hit(&self, ray: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord>;
 }
 
 impl HitRecord {
     pub fn set_face_normal(&mut self, r: &Ray, outward_normal: &Vec3) {
-        let front_face = Vec3::dot(&r.direction, outward_normal) > 0.0;
-        if front_face {
+        if Vec3::dot(&r.direction, outward_normal) > 0.0 {
             self.normal = *outward_normal;
         } else {
             self.normal = *outward_normal * -1.0;

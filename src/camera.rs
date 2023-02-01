@@ -59,10 +59,10 @@ impl Camera {
 }
 
 pub fn random_in_unit_disk() -> Vec3 {
-    let mut p: Vec3;
     let mut rng = rand::thread_rng();
+
     loop {
-        p = 2.0 * Vec3::new(rng.gen::<f64>(), rng.gen::<f64>(), rng.gen::<f64>());
+        let p = 2.0 * Vec3::new(rng.gen::<f64>(), rng.gen::<f64>(), rng.gen::<f64>());
         if Vec3::dot(&p, &p) < 1.0 {
             return p;
         }
