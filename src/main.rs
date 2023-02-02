@@ -37,6 +37,8 @@ fn color(r: &Ray, world: &HittableList, depth: i32) -> Color {
     }
 }
 
+const MAX_RGB_VALUE: u8 = 255; // Max value in RGB colours (0...255)
+
 fn main() {
     let flags = Flags::parse();
     if !flags.config.exists() || !flags.config.is_file() {
@@ -48,7 +50,6 @@ fn main() {
 
     /* Main setup */
     let samples = 100; // Nr of samples - higher nr will give better picture quality
-    let max_val = 255; // Max value in RGB colours (0...255)
     let light = 100; // Light level in the world (0...100)
 
     let mut rng = rand::thread_rng();
@@ -60,7 +61,7 @@ fn main() {
 
     let debug_pad = app.camera.height.to_string().len();
 
-    println!("P3\n{} {}\n{max_val}", app.camera.width, app.camera.height);
+    println!("P3\n{} {}\n{MAX_RGB_VALUE}", app.camera.width, app.camera.height);
 
     for j in (0..app.camera.height).rev() {
         eprint!("\rScanlines remaining: {j: <debug_pad$}");
