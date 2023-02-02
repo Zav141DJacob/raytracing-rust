@@ -1,7 +1,8 @@
 use crate::ray::Ray;
 use crate::vec3::Vec3;
 use rand::prelude::*;
-
+use serde::{Deserialize, Serialize};
+#[derive(Debug, Serialize, Deserialize)]
 pub struct Camera {
     origin: Vec3,
     lower_left_corner: Vec3,
