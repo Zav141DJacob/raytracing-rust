@@ -54,6 +54,14 @@ impl Vec3 {
         v1.0 * v2.0 + v1.1 * v2.1 + v1.2 * v2.2
     }
 
+    pub fn dot_xz(&self, other: &Vec3) -> f64 {
+        self.0 * other.0 + self.2 * other.2
+    }
+
+    pub fn dot_xy(&self, other: &Vec3) -> f64 {
+        self.0 * other.0 + self.1 * other.1
+    }
+
     pub fn cross(v1: &Vec3, v2: &Vec3) -> Vec3 {
         Vec3(
             v1.1 * v2.2 - v1.2 * v2.1,

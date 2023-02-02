@@ -6,6 +6,7 @@ pub mod flags;
 pub mod hit;
 pub mod material;
 pub mod plane_surf;
+mod cylinder;
 pub mod ray;
 pub mod rect;
 pub mod sphere;
