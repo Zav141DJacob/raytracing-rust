@@ -1,4 +1,7 @@
-use std::{ops::{Add, AddAssign, Div, DivAssign, Mul, Neg, Sub}, iter::Sum};
+use std::{
+    iter::Sum,
+    ops::{Add, AddAssign, Div, DivAssign, Mul, Neg, Sub},
+};
 
 use rand::{distributions::Standard, prelude::*};
 

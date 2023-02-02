@@ -1,10 +1,11 @@
 use crate::{
+    camera::Camera,
     cube::Cube,
     hit::{Hittable, HittableList},
     material::Material,
     plane_surf::Plane,
     sphere::Sphere,
-    vec3::Vec3, camera::Camera,
+    vec3::Vec3,
 };
 use serde::{Deserialize, Serialize};
 use std::fmt::Debug;
@@ -12,11 +13,6 @@ use std::fmt::Debug;
 #[typetag::serde]
 pub trait UnprocessedData: Debug {
     fn process(&self) -> Box<dyn Hittable>;
-}
-
-#[typetag::serde]
-pub trait UnprocessedCamera: Debug {
-    fn process(&self) -> Camera;
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -70,21 +66,27 @@ impl UnprocessedData for UnprocessedSphere {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-pub struct GetCamera {
+pub struct UnprocessedCamera {
     look_from: Vec3,
     look_at: Vec3,
     vup: Vec3,
     vfov: f64,
-    height: f64,
-    width: f64,
+    height: u32,
+    width: u32,
     aperture: f64,
 }
 
-#[typetag::serde(name = "Camera")]
-impl UnprocessedCamera for GetCamera {
+impl UnprocessedCamera {
     fn process(&self) -> Camera {
-        let aspect = self.height / self.width;
-        Camera::new(self.look_from, self.look_at, self.vup, self.vfov, aspect, self.aperture)
+        Camera::new(
+            self.look_from,
+            self.look_at,
+            self.vup,
+            self.vfov,
+            self.aperture,
+            self.height,
+            self.width,
+        )
     }
 }
 
@@ -93,14 +95,14 @@ pub struct Config {
     #[serde(alias = "world")]
     unprocessed_data: Vec<Box<dyn UnprocessedData>>,
     #[serde(alias = "camera")]
-    cam: Box<dyn UnprocessedCamera>
+    cam: UnprocessedCamera,
 }
 
 impl Config {
     pub fn process(self) -> Application {
         Application {
             world: HittableList::new(self.unprocessed_data.iter().map(|d| d.process()).collect()),
-            camera: self.cam.process()
+            camera: self.cam.process(),
         }
     }
 }
