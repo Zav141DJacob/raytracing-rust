@@ -41,6 +41,7 @@ impl Hittable for Sphere {
                     material: self.material,
                 });
             }
+
             temp = (-b + discriminant.sqrt()) / a;
             if temp < t_max && temp > t_min {
                 return Some(HitRecord {

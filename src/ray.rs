@@ -3,7 +3,7 @@ use crate::Vec3;
 #[cfg(test)]
 use assert_approx_eq::assert_approx_eq;
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Default, Debug, Clone, Copy)]
 pub struct Ray {
     pub origin: Vec3,
     pub direction: Vec3,

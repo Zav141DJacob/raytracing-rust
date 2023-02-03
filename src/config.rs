@@ -1,4 +1,5 @@
 use crate::{
+    camera::Camera,
     cube::Cube,
     hit::{Hittable, HittableList},
     material::Material,
@@ -81,16 +82,54 @@ impl UnprocessedData for UnprocessedCylinder {
     }
 }
 
+#[derive(Debug, Serialize, Deserialize)]
+pub struct UnprocessedCamera {
+    look_from: Vec3,
+    look_at: Vec3,
+    vup: Vec3,
+    vfov: f64,
+    aperture: f64,
+}
+
+impl UnprocessedCamera {
+    fn process(&self, height: u32, width: u32) -> Camera {
+        Camera::new(
+            self.look_from,
+            self.look_at,
+            self.vup,
+            self.vfov,
+            self.aperture,
+            height,
+            width,
+        )
+    }
+}
+
 #[derive(Debug, Deserialize, Serialize)]
 pub struct Config {
     #[serde(alias = "world")]
     unprocessed_data: Vec<Box<dyn UnprocessedData>>,
+    #[serde(alias = "camera")]
+    cam: UnprocessedCamera,
+    #[serde(alias = "light")]
+    light: i32,
+    #[serde(alias = "samples")]
+    samples: i32,
+    #[serde(alias = "width")]
+    width: u32,
+    #[serde(alias = "height")]
+    height: u32,
 }
 
 impl Config {
     pub fn process(self) -> Application {
         Application {
             world: HittableList::new(self.unprocessed_data.iter().map(|d| d.process()).collect()),
+            camera: self.cam.process(self.width, self.height),
+            light: self.light,
+            samples: self.samples,
+            width: self.width,
+            height: self.height,
         }
     }
 }
@@ -98,4 +137,9 @@ impl Config {
 #[derive(Debug)]
 pub struct Application {
     pub world: HittableList,
+    pub camera: Camera,
+    pub light: i32,
+    pub samples: i32,
+    pub height: u32,
+    pub width: u32,
 }

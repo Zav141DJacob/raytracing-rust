@@ -1,7 +1,8 @@
 use crate::ray::Ray;
 use crate::vec3::Vec3;
 use rand::prelude::*;
-
+use serde::{Deserialize, Serialize};
+#[derive(Debug, Serialize, Deserialize)]
 pub struct Camera {
     origin: Vec3,
     lower_left_corner: Vec3,
@@ -10,6 +11,9 @@ pub struct Camera {
     lens_radius: f64,
     u: Vec3,
     v: Vec3,
+
+    pub height: u32,
+    pub width: u32,
 }
 
 impl Camera {
@@ -18,9 +22,12 @@ impl Camera {
         look_at: Vec3,
         vup: Vec3,
         vfov: f64,
-        aspect: f64,
         aperture: f64,
+        height: u32,
+        width: u32
     ) -> Camera {
+        let aspect = width as f64 / height as f64;
+
         let lens_radius = aperture / 2.0;
         let focus_dist = (look_from - look_at).length();
         let theta = vfov * std::f64::consts::PI / 180.0;
@@ -43,6 +50,8 @@ impl Camera {
             lens_radius,
             u,
             v,
+            height,
+            width,
         }
     }
 
@@ -59,10 +68,10 @@ impl Camera {
 }
 
 pub fn random_in_unit_disk() -> Vec3 {
-    let mut p: Vec3;
     let mut rng = rand::thread_rng();
+
     loop {
-        p = 2.0 * Vec3::new(rng.gen::<f64>(), rng.gen::<f64>(), rng.gen::<f64>());
+        let p = 2.0 * Vec3::new(rng.gen::<f64>(), rng.gen::<f64>(), rng.gen::<f64>());
         if Vec3::dot(&p, &p) < 1.0 {
             return p;
         }
