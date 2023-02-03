@@ -1,5 +1,5 @@
 Config(
-    light: 30,
+    light: 130,
     samples: 20,
     height: 540,
     width: 380,
