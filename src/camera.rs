@@ -11,6 +11,9 @@ pub struct Camera {
     lens_radius: f64,
     u: Vec3,
     v: Vec3,
+
+    pub height: u32,
+    pub width: u32,
 }
 
 impl Camera {
@@ -19,9 +22,12 @@ impl Camera {
         look_at: Vec3,
         vup: Vec3,
         vfov: f64,
-        aspect: f64,
         aperture: f64,
+        height: u32,
+        width: u32
     ) -> Camera {
+        let aspect = width as f64 / height as f64;
+
         let lens_radius = aperture / 2.0;
         let focus_dist = (look_from - look_at).length();
         let theta = vfov * std::f64::consts::PI / 180.0;
@@ -44,6 +50,8 @@ impl Camera {
             lens_radius,
             u,
             v,
+            height,
+            width,
         }
     }
 

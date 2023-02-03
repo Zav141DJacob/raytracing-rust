@@ -12,7 +12,6 @@ pub mod ray;
 pub mod sphere;
 pub mod vec3;
 
-use camera::Camera;
 use clap::Parser;
 use color::Color;
 use hit::{Hittable, HittableList};
@@ -38,6 +37,8 @@ fn color(r: &Ray, world: &HittableList, depth: i32) -> Color {
     }
 }
 
+const MAX_RGB_VALUE: u8 = 255; // Max value in RGB colours (0...255)
+
 fn main() {
     let flags = Flags::parse();
     if !flags.config.exists() || !flags.config.is_file() {
@@ -54,15 +55,6 @@ fn main() {
     let max_val = 255; // Max value in RGB colours (0...255)
     let light = app.brightness; // Light level in the world (0...100)
 
-    /* Camera setup */
-    // let look_from = Vec3::new(1.0, 2.0, 2.0); // Where is camera looking from
-    // let look_at = Vec3::new(0.0, 0.0, -1.0); // Where camera is pointing to
-    // let vup = Vec3::new(0.0, 1.0, 0.0); // Camera angle (better to leave as is)
-    // let vfov = 45.0; // View angle - can be used for zoom (smaller angle = zoomed in)
-    // let aspect = width as f64 / height as f64; // Ratio of camera picture
-    // let aperture = 0.1; // Focus depth
-    // let camera = Camera::new(look_from, look_at, vup, vfov, aspect, aperture);
-
     let mut rng = rand::thread_rng();
     let brightness = if light > 0 && light <= 100 {
         light as f64 / 100.0
@@ -70,18 +62,18 @@ fn main() {
         1.0
     };
 
-    let debug_pad = height.to_string().len();
+    let debug_pad = app.camera.height.to_string().len();
 
-    println!("P3\n{width} {height}\n{max_val}");
+    println!("P3\n{} {}\n{MAX_RGB_VALUE}", app.camera.width, app.camera.height);
 
-    for j in (0..height).rev() {
+    for j in (0..app.camera.height).rev() {
         eprint!("\rScanlines remaining: {j: <debug_pad$}");
 
-        for i in 0..width {
+        for i in 0..app.camera.width {
             let mut col: Color = (0..samples)
                 .map(|_| {
-                    let u = (i as f64 + rng.gen::<f64>()) / width as f64;
-                    let v = (j as f64 + rng.gen::<f64>()) / height as f64;
+                    let u = (i as f64 + rng.gen::<f64>()) / app.camera.width as f64;
+                    let v = (j as f64 + rng.gen::<f64>()) / app.camera.height as f64;
                     let r = &app.camera.get_ray(u, v);
 
                     color(r, &app.world, 1)
