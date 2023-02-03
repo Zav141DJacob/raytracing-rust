@@ -77,7 +77,7 @@ pub struct UnprocessedCamera {
 }
 
 impl UnprocessedCamera {
-    fn process(&self) -> Camera {
+    fn process(&self, height: i32, width: i32) -> Camera {
         Camera::new(
             self.look_from,
             self.look_at,
@@ -110,7 +110,7 @@ impl Config {
     pub fn process(self) -> Application {
         Application {
             world: HittableList::new(self.unprocessed_data.iter().map(|d| d.process()).collect()),
-            camera: self.cam.process(),
+            camera: self.cam.process(self.width, self.height),
             light: self.light,
             samples: self.samples,
             width: self.width,
