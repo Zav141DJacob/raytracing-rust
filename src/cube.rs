@@ -18,7 +18,6 @@ impl Cube {
 
 impl Hittable for Cube {
     fn hit(&self, r: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {
-
         let t1 = (self.min.x() - r.origin.x()) / r.direction.x();
         let t2 = (self.max.x() - r.origin.x()) / r.direction.x();
 
@@ -57,11 +56,10 @@ impl Hittable for Cube {
                 u: 1.0,
                 v: 1.0,
                 normal,
-                material: self.material.clone(),
+                material: self.material,
             })
         } else {
             None
         }
     }
 }
-

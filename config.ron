@@ -1,4 +1,8 @@
 Config(
+    light: 100,
+    samples: 100,
+    width: 240,
+    height: 180,
     world: [
         {
             "Sphere": (
@@ -26,6 +30,16 @@ Config(
             )
         },
         {
+            "Cylinder": (
+                center: Vec3(0.5, 0.5, 0.5),
+                radius: 0.25,
+                height: 0.5,
+                material: Lambertian(
+                    albedo: Vec3(1.0, 0.1, 0.1),
+                )
+            )
+        },
+        {
             "Plane": (
                 normal: Vec3(0.0, 2.0, -1.0),
                 dist: 0.0,
@@ -37,5 +51,12 @@ Config(
             )
         }
     ],
+    camera: (
+        look_from: Vec3(1.0, 2.0, 2.0),
+        look_at: Vec3(0.0, 0.0, -1.0),
+        vup: Vec3(0.0, 1.0, 0.0),
+        vfov: 45.0,
+        aperture: 0.1,
+    )
 )
 

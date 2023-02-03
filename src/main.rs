@@ -8,11 +8,11 @@ pub mod flags;
 pub mod hit;
 pub mod material;
 pub mod plane_surf;
+mod cylinder;
 pub mod ray;
 pub mod sphere;
 pub mod vec3;
 
-use camera::Camera;
 use clap::Parser;
 use color::Color;
 use hit::{Hittable, HittableList};
@@ -38,6 +38,8 @@ fn color(r: &Ray, world: &HittableList, depth: i32) -> Color {
     }
 }
 
+const MAX_RGB_VALUE: u8 = 255; // Max value in RGB colours (0...255)
+
 fn main() {
     let flags = Flags::parse();
     if !flags.config.exists() || !flags.config.is_file() {
@@ -47,48 +49,32 @@ fn main() {
 
     let app = flags.get_application().expect("Failed to parse config");
 
-    /* Main setup */
-    let width = 240; // Picture width
-    let height = 180; // Picture height
-    let samples = 100; // Nr of samples - higher nr will give better picture quality
-    let max_val = 255; // Max value in RGB colours (0...255)
-    let light = 100; // Light level in the world (0...100)
-
-    /* Camera setup */
-    let look_from = Vec3::new(1.0, 2.0, 2.0); // Where is camera looking from
-    let look_at = Vec3::new(0.0, 0.0, -1.0); // Where camera is pointing to
-    let vup = Vec3::new(0.0, 1.0, 0.0); // Camera angle (better to leave as is)
-    let vfov = 45.0; // View angle - can be used for zoom (smaller angle = zoomed in)
-    let aspect = width as f64 / height as f64; // Ratio of camera picture
-    let aperture = 0.1; // Focus depth
-    let camera = Camera::new(look_from, look_at, vup, vfov, aspect, aperture);
-
     let mut rng = rand::thread_rng();
-    let brightness = if light > 0 && light <= 100 {
-        light as f64 / 100.0
+    let brightness = if app.light > 0 && app.light <= 100 {
+        app.light as f64 / 100.0
     } else {
         1.0
     };
 
-    let debug_pad = height.to_string().len();
+    let debug_pad = app.height.to_string().len();
 
-    println!("P3\n{width} {height}\n{max_val}");
+    println!("P3\n{} {}\n{MAX_RGB_VALUE}", app.width, app.height);
 
-    for j in (0..height).rev() {
+    for j in (0..app.height).rev() {
         eprint!("\rScanlines remaining: {j: <debug_pad$}");
 
-        for i in 0..width {
-            let mut col: Color = (0..samples)
+        for i in 0..app.width {
+            let mut col: Color = (0..app.samples)
                 .map(|_| {
-                    let u = (i as f64 + rng.gen::<f64>()) / width as f64;
-                    let v = (j as f64 + rng.gen::<f64>()) / height as f64;
-                    let r = &camera.get_ray(u, v);
+                    let u = (i as f64 + rng.gen::<f64>()) / app.width as f64;
+                    let v = (j as f64 + rng.gen::<f64>()) / app.height as f64;
+                    let r = &app.camera.get_ray(u, v);
 
                     color(r, &app.world, 1)
                 })
                 .sum();
 
-            col /= samples as f64;
+            col /= app.samples as f64;
             col = brightness * col;
 
             let adjust = |f: f64| (255.99 * f) as i32;
