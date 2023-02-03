@@ -1,5 +1,5 @@
 Config(
-    brightness: 100,
+    light: 100,
     samples: 100,
     height: 240,
     width: 180,

@@ -53,7 +53,7 @@ fn main() {
     let height = app.height; // Picture height
     let samples = app.samples; // Nr of samples - higher nr will give better picture quality
     let max_val = 255; // Max value in RGB colours (0...255)
-    let light = app.brightness; // Light level in the world (0...100)
+    let light = app.light; // Light level in the world (0...100)
 
     let mut rng = rand::thread_rng();
     let brightness = if light > 0 && light <= 100 {

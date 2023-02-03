@@ -96,6 +96,14 @@ pub struct Config {
     unprocessed_data: Vec<Box<dyn UnprocessedData>>,
     #[serde(alias = "camera")]
     cam: UnprocessedCamera,
+    #[serde(alias = "light")]
+    light: i32,
+    #[serde(alias = "samples")]
+    samples: i32,
+    #[serde(alias = "width")]
+    width: i32,
+    #[serde(alias = "height")]
+    height: i32,
 }
 
 impl Config {
@@ -103,7 +111,7 @@ impl Config {
         Application {
             world: HittableList::new(self.unprocessed_data.iter().map(|d| d.process()).collect()),
             camera: self.cam.process(),
-            brightness: self.brightness,
+            light: self.light,
             samples: self.samples,
             width: self.width,
             height: self.height,
@@ -115,7 +123,7 @@ impl Config {
 pub struct Application {
     pub world: HittableList,
     pub camera: Camera,
-    pub brightness: i32,
+    pub light: i32,
     pub samples: i32,
     pub height: i32,
     pub width: i32,
