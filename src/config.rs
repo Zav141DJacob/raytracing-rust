@@ -71,21 +71,19 @@ pub struct UnprocessedCamera {
     look_at: Vec3,
     vup: Vec3,
     vfov: f64,
-    height: u32,
-    width: u32,
     aperture: f64,
 }
 
 impl UnprocessedCamera {
-    fn process(&self, height: i32, width: i32) -> Camera {
+    fn process(&self, height: u32, width: u32) -> Camera {
         Camera::new(
             self.look_from,
             self.look_at,
             self.vup,
             self.vfov,
             self.aperture,
-            self.height,
-            self.width,
+            height,
+            width,
         )
     }
 }
@@ -101,9 +99,9 @@ pub struct Config {
     #[serde(alias = "samples")]
     samples: i32,
     #[serde(alias = "width")]
-    width: i32,
+    width: u32,
     #[serde(alias = "height")]
-    height: i32,
+    height: u32,
 }
 
 impl Config {
@@ -125,6 +123,6 @@ pub struct Application {
     pub camera: Camera,
     pub light: i32,
     pub samples: i32,
-    pub height: i32,
-    pub width: i32,
+    pub height: u32,
+    pub width: u32,
 }
