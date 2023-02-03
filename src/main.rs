@@ -48,11 +48,11 @@ fn main() {
     let app = flags.get_application().expect("Failed to parse config");
 
     /* Main setup */
-    let width = 240; // Picture width
-    let height = 180; // Picture height
-    let samples = 100; // Nr of samples - higher nr will give better picture quality
+    let width = app.width; // Picture width
+    let height = app.height; // Picture height
+    let samples = app.samples; // Nr of samples - higher nr will give better picture quality
     let max_val = 255; // Max value in RGB colours (0...255)
-    let light = 100; // Light level in the world (0...100)
+    let light = app.brightness; // Light level in the world (0...100)
 
     /* Camera setup */
     // let look_from = Vec3::new(1.0, 2.0, 2.0); // Where is camera looking from

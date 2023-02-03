@@ -1,4 +1,8 @@
 Config(
+    brightness: 100,
+    samples: 100,
+    height: 240,
+    width: 180,
     world: [
         {
             "Sphere": (
@@ -39,14 +43,14 @@ Config(
     ],
     camera: {
          "Camera": (
-             look_from: Vec3(1.0, 2.0, 2.0),
+             look_from: Vec3(1.0, 2.0, -0.5),
              look_at: Vec3(0.0, 0.0, -1.0),
              vup: Vec3(0.0, 1.0, 0.0),
-             vfov: 95.0,
+             vfov: 85.0,
              height: 240.0,
              width: 180.0,
-             aperture: 0.4,
+             aperture: 0.1,
          ) 
-      }
+      },
 )
 
