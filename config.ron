@@ -1,8 +1,8 @@
 Config(
-    light: 130,
-    samples: 20,
-    height: 540,
-    width: 380,
+    light: 100,
+    samples: 100,
+    width: 240,
+    height: 180,
     world: [
         {
             "Sphere": (

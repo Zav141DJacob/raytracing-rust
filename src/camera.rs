@@ -12,8 +12,8 @@ pub struct Camera {
     u: Vec3,
     v: Vec3,
 
-    pub height: u32,
-    pub width: u32,
+    height: u32,
+    width: u32,
 }
 
 impl Camera {
@@ -26,7 +26,7 @@ impl Camera {
         height: u32,
         width: u32
     ) -> Camera {
-        let aspect = width as f64 / height as f64;
+        let aspect = height as f64 / width as f64;
 
         let lens_radius = aperture / 2.0;
         let focus_dist = (look_from - look_at).length();
