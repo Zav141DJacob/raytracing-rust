@@ -6,6 +6,7 @@ use crate::{
     plane_surf::Plane,
     sphere::Sphere,
     vec3::Vec3,
+    cylinder::Cylinder,
 };
 use serde::{Deserialize, Serialize};
 use std::fmt::Debug;
@@ -62,6 +63,22 @@ pub struct UnprocessedSphere {
 impl UnprocessedData for UnprocessedSphere {
     fn process(&self) -> Box<dyn Hittable> {
         Box::new(Sphere::new(self.center, self.radius, self.material))
+    }
+}
+
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct UnprocessedCylinder {
+    center: Vec3,
+    radius: f64,
+    height: f64,
+    material: Material,
+}
+
+#[typetag::serde(name = "Cylinder")]
+impl UnprocessedData for UnprocessedCylinder {
+    fn process(&self) -> Box<dyn Hittable> {
+        Box::new(Cylinder::new(self.center, self.radius, self.height, self.material))
     }
 }
 
