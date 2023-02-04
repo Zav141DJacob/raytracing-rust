@@ -4,7 +4,7 @@ use crate::Vec3;
 
 use std::fmt::Debug;
 
-#[derive(Default)]
+#[derive(Default, Clone, Copy)]
 pub struct HitRecord {
     pub t: f64,
     pub point: Vec3,

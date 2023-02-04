@@ -5,37 +5,30 @@ Config(
     height: 180,
     world: [
         {
+            "Cylinder": (
+                center: Vec3(0.5, 1.5, 0.5),
+                radius: 0.25,
+                height: 0.7,
+                material: Lambertian(
+                    albedo: Vec3(1.0, 0.1, 0.1),
+                )
+            )
+        },
+        {
             "Sphere": (
-                center: Vec3(1.0, 0.0, -1.0),
-                radius: 0.5,
+                center: Vec3(0.5, 1.55, 0.5),
+                radius: 0.125,
                 material: Lambertian(
                     albedo: Vec3(0.4, 0.4, 1.0),
                 )
             )
         },
         {
-            "Cube": (
-                p0: Vec3(-0.5, 0.0, -1.0),
-                p1: Vec3(0.5, 1.0, 0.0),
-                mat: Lambertian(
-                    albedo: Vec3(1.0, 0.1, 0.1),
-                )
-            )
-        },
-        {
             "Sphere": (
-                center: Vec3(-1.0, 0.0, -1.0),
-                radius: 0.5,
-                material: Dielectric ( ref_idx: 1.5 )
-            )
-        },
-        {
-            "Cylinder": (
-                center: Vec3(0.5, 0.5, 0.5),
-                radius: 0.25,
-                height: 0.5,
+                center: Vec3(0.5, 2.15, 0.5),
+                radius: 0.125,
                 material: Lambertian(
-                    albedo: Vec3(1.0, 0.1, 0.1),
+                    albedo: Vec3(0.4, 0.4, 1.0),
                 )
             )
         },
@@ -52,8 +45,8 @@ Config(
         }
     ],
     camera: (
-        look_from: Vec3(1.0, 2.0, 2.0),
-        look_at: Vec3(0.0, 0.0, -1.0),
+        look_from: Vec3(2.0, 1.0, 0.2),
+        look_at: Vec3(0.5, 1.5, 0.5),
         vup: Vec3(0.0, 1.0, 0.0),
         vfov: 45.0,
         aperture: 0.1,
